@@ -1,3 +1,9 @@
+<img width="1052" height="436" alt="Screenshot 2025-07-14 205450" src="https://github.com/user-attachments/assets/db6e1cab-3b23-4900-817b-ff3c918c670a" />
+
+<img width="668" height="363" alt="Screenshot 2025-07-14 205321" src="https://github.com/user-attachments/assets/38f7802c-88da-4d84-9df7-011e73fe6f2c" />
+
+<img width="324" height="316" alt="Screenshot 2025-07-14 205423" src="https://github.com/user-attachments/assets/1d143939-8829-4cf2-94dc-98b84e0b7d4b" />
+
 # NeuroDyads
 
 A reproducible toolkit for extracting and interpreting low-dimensional neural embeddings from EEG hyperscanning of dyadic social interactions using the CEBRA framework.
@@ -81,13 +87,22 @@ This experiment grid helps us pinpoint which training setup yields the most stab
 
 ---
 
-### Getting Started
+## Getting Started
 
 1. Clone this repo  
 2. `pip install -r requirements.txt` (CEBRA 0.6.0a2, PyTorch ≥ 2.0)  
 3. `python scripts/prepare_cebra_input.py` to generate inputs  
 4. Run the supervised or unsupervised training script  
 5. Inspect results under `results/` and `figures/`  
+
+---
+
+## Citation
+Barde, A., Saffaryazdi, N., Withana, P., Patel, N., Sasikumar, P., & Billinghurst, M. (2019). Inter-brain connectivity: Comparisons between real and virtual environments using hyperscanning. In 2019 IEEE International Symposium on Mixed and Augmented Reality Adjunct (ISMAR-Adjunct) (pp. 338–339). IEEE. https://doi.org/10.1109/ISMAR-Adjunct.2019.00-17
+
+Jazayeri, M., & Afraz, A. (2017). Navigating the neural space in search of the neural code. Neuron, 93(5), 1003–1014. https://doi.org/10.1016/j.neuron.2017.02.019
+
+Algumaei, A., Hettiarachchi, I. T., Farghaly, M., & Bhatti, A. (2023). The neuroscience of team dynamics: Exploring neurophysiological measures for assessing team performance. IEEE Access, 11, 129173–129194. https://doi.org/10.1109/ACCESS.2023.3332907 
 
 ---
 
