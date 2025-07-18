@@ -1,0 +1,7 @@
+mne>=1.10.0
+numpy==1.26.4
+scipy>=1.15.0
+matplotlib>=3.10.0
+pyprep>=0.4.3
+pyedflib>=0.1.4
+scikit-learn>=1.5.0
