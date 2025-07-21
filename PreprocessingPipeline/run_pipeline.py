@@ -8,6 +8,10 @@ def main():
     parser = argparse.ArgumentParser(description='EEG Processing Pipeline')
     parser.add_argument('file1', help='First EEG file (.set)')
     parser.add_argument('file2', help='Second EEG file (.set)')
+    parser.add_argument('--name1', required=True,
+                       help='Base name for first subject (e.g., subj01_rest)')
+    parser.add_argument('--name2', required=True,
+                       help='Base name for second subject (e.g., subj02_rest)')
     parser.add_argument('--montage', default='GSN-HydroCel-65_1.0.sfp', 
                        help='Path to montage file')
     parser.add_argument('--output_dir', default='preprocessed_output',
@@ -31,7 +35,7 @@ def main():
     print("Preprocessing first file...")
     output1 = preprocess_eeg(
         raw1_aligned, 
-        name="file1_preprocessed",
+        name=args.name1,
         montage_path=args.montage,
         output_dir=args.output_dir
     )
@@ -39,7 +43,7 @@ def main():
     print("Preprocessing second file...")
     output2 = preprocess_eeg(
         raw2_aligned,
-        name="file2_preprocessed",
+        name=args.name2,
         montage_path=args.montage,
         output_dir=args.output_dir
     )
