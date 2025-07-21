@@ -1,0 +1,173 @@
+{
+    "timestamp": "2025-07-21T16:09:28.015946",
+    "processing_steps": [
+        {
+            "step": "use_raw_object",
+            "description": "Used already loaded Raw object",
+            "n_channels": 65,
+            "duration_seconds": 193.848
+        },
+        {
+            "step": "set_montage",
+            "description": "Applied montage from C:/Users/mariy/Desktop/gsoc2025/GSN-HydroCel-65_1.0.sfp",
+            "montage_channels": [
+                "E1",
+                "E2",
+                "E3",
+                "E4",
+                "E5",
+                "E6",
+                "E7",
+                "E8",
+                "E9",
+                "E10",
+                "E11",
+                "E12",
+                "E13",
+                "E14",
+                "E15",
+                "E16",
+                "E17",
+                "E18",
+                "E19",
+                "E20",
+                "E21",
+                "E22",
+                "E23",
+                "E24",
+                "E25",
+                "E26",
+                "E27",
+                "E28",
+                "E29",
+                "E30",
+                "E31",
+                "E32",
+                "E33",
+                "E34",
+                "E35",
+                "E36",
+                "E37",
+                "E38",
+                "E39",
+                "E40",
+                "E41",
+                "E42",
+                "E43",
+                "E44",
+                "E45",
+                "E46",
+                "E47",
+                "E48",
+                "E49",
+                "E50",
+                "E51",
+                "E52",
+                "E53",
+                "E54",
+                "E55",
+                "E56",
+                "E57",
+                "E58",
+                "E59",
+                "E60",
+                "E61",
+                "E62",
+                "E63",
+                "E64",
+                "Cz"
+            ]
+        },
+        {
+            "step": "highpass_filter",
+            "description": "Applied 1.0 Hz high-pass filter",
+            "filter_settings": {
+                "l_freq": 1.0,
+                "h_freq": null
+            }
+        },
+        {
+            "step": "bad_channel_detection",
+            "description": "Identified bad channels using pyprep",
+            "bad_channels": {
+                "bad_by_nan": [],
+                "bad_by_flat": [
+                    "Cz"
+                ],
+                "bad_by_deviation": [
+                    "E63"
+                ],
+                "bad_by_hf_noise": [],
+                "bad_by_correlation": [
+                    "E7",
+                    "E23",
+                    "E52",
+                    "E55",
+                    "E63"
+                ],
+                "bad_by_ransac": [
+                    "E24",
+                    "E27"
+                ]
+            },
+            "all_bad_channels": [
+                "E55",
+                "Cz",
+                "E23",
+                "E7",
+                "E24",
+                "E52",
+                "E63",
+                "E27"
+            ],
+            "n_bad_channels": 8
+        },
+        {
+            "step": "interpolate_bads",
+            "description": "Interpolated bad channels",
+            "interpolated_channels": [
+                "E55",
+                "Cz",
+                "E23",
+                "E7",
+                "E24",
+                "E52",
+                "E63",
+                "E27"
+            ]
+        },
+        {
+            "step": "ica_fit",
+            "description": "Fitted ICA components",
+            "ica_settings": {
+                "n_components": 30,
+                "random_state": 97,
+                "max_iter": "auto"
+            }
+        },
+        {
+            "step": "ica_plot",
+            "description": "Saved ICA components figure for visual inspection",
+            "n_components_plotted": 30
+        },
+        {
+            "step": "ica_component_selection",
+            "description": "User-selected ICA components to exclude",
+            "excluded_components": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+            ],
+            "n_components_excluded": 6
+        },
+        {
+            "step": "ica_apply",
+            "description": "Applied ICA cleaning",
+            "n_components_removed": 6
+        }
+    ],
+    "original_file": "Raw object provided directly"
+}
