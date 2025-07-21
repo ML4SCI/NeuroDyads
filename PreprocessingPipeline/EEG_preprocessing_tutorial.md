@@ -46,6 +46,14 @@ python run_pipeline.py C:/Users/mariy/Desktop/gsoc2025/used_files/n9_listen_clea
 
 The two files in question should be people doing the task simultaneously, e.g. NT9 speaking and NT10 listening for the case of NT9-10 pair due to preprocessing pipeline 
 
+If you want to change the output directory you should add: 
+
+```
+--output_dir directory_name
+```
+
+If you don't the script will automatically create one 
+
 # Step 4.1: Beware of very noisy data 
 
 If the data is too noisy, the algorithm will tell you. In this case mark the dataset is too noisy in our common spreadsheet 
@@ -56,6 +64,21 @@ Meaning:
 1. Insert number of the components (for now it's 30)
 2. You'll see plots popping up with ICA information. Close them, so the script could continue running 
 
-You'll see the plots here: 
+You'll see the plots in the directory you chose as output directory: 
+![alt text](image-1.png)
 
-3. 
+So you can look them up 
+
+3. Enter ICA you wanted to exclude (comma-separated)
+
+For example: 
+```
+1,2,3,4,5,6
+```
+4. Steps 1-3 will be repeated twice, once for each file you put into preprocessing 
+
+5. You should see this kind of structure in the output directory: 
+
+![Example for one pair](image-2.png)
+
+It should contain: .png files with ICA results, .zip file with this pics together, preprocessed .edf file and .json with all your decisions 
