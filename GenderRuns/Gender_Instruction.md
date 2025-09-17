@@ -6,7 +6,7 @@
 
 ## Step 3: Upload EEG and montage data to the notebook
 
-![Where to upload the file](input_screenshot.png)
+![Where to upload the file](input_screenshot.jpg)
 
 1. You do it through "upload" button 
 2. Normally you download the folder with data from Box as a zip archive, you upload it to kaggle as a zip file and it unzips automatically 
@@ -16,10 +16,11 @@
 
 I use GPU-P100 
 
-![Where to choose the accelerator](accelerator_screenshot.png)
+![Where to choose the accelerator](accelerator_screenshot.jpg)
 
 ## Step 5: You run the script through save version button 
 
-![Where to start running the script](runscript_screenshot.png)
+![Where to start running the script](runscript_screenshot.jpg)
+
 
 The notebook will run by itself and when it finished, you'll receive an email notification. You can look at the produced results and download them to your personal laptop/PC 
