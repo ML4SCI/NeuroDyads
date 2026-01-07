@@ -1,0 +1,14 @@
+# Core numerical & EEG processing
+numpy
+scipy
+mne
+
+# Machine learning / deep learning
+torch>=2.0
+cebra==0.6.0a2
+scikit-learn
+
+# Visualization & utilities (used in notebooks and analysis)
+matplotlib
+seaborn
+tqdm
