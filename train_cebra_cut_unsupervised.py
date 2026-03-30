@@ -17,7 +17,7 @@ from cebra.integrations.sklearn import metrics as cmetrics
 # ------------------------------------------------------------------ #
 # 1. Paths
 # ------------------------------------------------------------------ #
-ROOT       = Path(__file__).resolve().parent
+ROOT       = Path(__file__).resolve().parents[1]
 DATA_DIR   = ROOT / "data" / "processed" / "cut_60" / "raw"
 MODELS_DIR = ROOT / "models"  / "cut_60" / "raw"
 RESULTS    = ROOT / "results"

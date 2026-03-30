@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------
 # 2. Paths and Constants
 # ---------------------------------------------------------------------
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[1]
 PROC = ROOT / "data" / "processed"
 MODELS = ROOT / "models"
 RESULTS = ROOT / "results"
