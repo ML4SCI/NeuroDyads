@@ -20,7 +20,7 @@ import json
 # ---------------------------------------------------------------------
 # 1.  Paths
 # ---------------------------------------------------------------------
-ROOT   = Path(__file__).resolve().parents[1]          # repo root
+ROOT   = Path(__file__).resolve().parent              # repo root
 RAW    = ROOT / "data" / "raw"
 PROC   = ROOT / "data" / "processed"
 PROC.mkdir(parents=True, exist_ok=True)

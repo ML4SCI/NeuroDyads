@@ -58,14 +58,16 @@ We record 64-channel EEG simultaneously from two people (“speaker” ↔ “li
    - Save full-dataset embeddings (`.npy`) and final model checkpoints (`.pt`)
 
 3. **Metrics & Visualization**  
-   - **Variability:** consistency across runs → variability = 1 − mean consistency  
-   - **Goodness-of-Fit:** Info-NCE bits history  
-   - **Decoding:** KNN on latent coords → R² for speaker/listener labels (and later continuous traits)  
-   - **Plots:** embedding scatter, loss curves, combined overview
+  - **Variability:** consistency across runs → variability = 1 − mean consistency  
+  - **Goodness-of-Fit:** Info-NCE bits history  
+  - **Decoding:** KNN on latent coords → R² for speaker/listener labels (and later continuous traits)  
+  - **Evaluation exports:** optional repeated stratified CV and learning-curve summaries for supervised embeddings  
+  - **Plots:** embedding scatter, loss curves, combined overview
 
 4. **Reproducibility**  
-   - All seeds, versions, and paths are logged  
-   - Results and figures organized under `models/…` and `results/…`
+  - All seeds, versions, and paths are logged  
+  - Results and figures organized under `models/…` and `results/…`
+  - Supervised evaluation exports are written under `results/evaluation/supervised/`
 
 ---
 
@@ -91,9 +93,11 @@ This experiment grid helps us pinpoint which training setup yields the most stab
 
 1. Clone this repo  
 2. `pip install -r requirements.txt` (CEBRA 0.6.0a2, PyTorch ≥ 2.0)  
-3. `python scripts/prepare_cebra_input.py` to generate inputs  
+3. `python prepare_cebra_input.py` to generate inputs  
 4. Run the supervised or unsupervised training script  
-5. Inspect results under `results/` and `figures/`  
+5. To evaluate supervised embeddings with repeated stratified CV and learning curves:
+   `python train_cebra_cut_supervised.py --run-cv --cv-folds 5 --cv-repeats 2 --run-learning-curve --lc-fracs 0.2,0.4,0.6,0.8,1.0`
+6. Inspect results under `results/`, `results/figures/`, and `results/evaluation/supervised/`
 
 ---
 
