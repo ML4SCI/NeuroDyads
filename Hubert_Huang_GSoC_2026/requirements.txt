@@ -1,0 +1,23 @@
+# Core dependencies used across preprocessing/, datasets/, training/,
+# controls/, geometry/, evaluation/, and gender_analysis/.
+numpy
+pandas
+scipy
+scikit-learn
+matplotlib
+mne>=1.0
+
+# CEBRA itself + its PyTorch backend (used by every training/*.py and
+# controls/run_dyad_aq_permutation_control.py script). Install PyTorch first
+# per https://pytorch.org/get-started/locally/ (CUDA build recommended for
+# CEBRA training), then:
+torch
+cebra
+
+# Only needed for the optional non-oscillatory / aperiodic extraction step
+# (preprocessing/run_aperiodic_extractor_adapter.py) and the optional
+# lightning-talk deck builder (examples/build_lightning_talk_pptx.py):
+fooof
+python-pptx
+Pillow
+openpyxl

@@ -1,0 +1,15 @@
+# Generated outputs from running these scripts (results/, logs, exported
+# figures/manifests) -- everything under figures/ and this file's own
+# directory tree is still tracked; this only excludes fresh output a user
+# generates by re-running the pipeline against their own data.
+results/
+*.log
+__pycache__/
+*.pyc
+
+# Raw/derived EEG data and demographic spreadsheets are never expected here
+# (see the top-level README's "Dataset description" section) but are
+# excluded defensively in case a user reruns preprocessing in place.
+*.edf
+*.xlsx
+*.xls
