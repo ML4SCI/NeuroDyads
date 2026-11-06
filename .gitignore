@@ -1,0 +1,41 @@
+# --- Data & artifacts (never commit) ---
+data/manual_cut/
+data/processed/
+data/raw/
+models/
+results/
+
+# EEG / data files
+*.fdt
+*.set
+*.edf
+*.npy
+
+# Participant data and raw exports
+Filtered Data/
+*.xlsx
+*.xls
+*.numbers
+*.zip
+
+# Model checkpoints / large binaries
+*.pt
+*.pth
+*.ckpt
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+.venv/
+venv/
+env/
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# NOTE: source code (*.py), docs (*.md), and notebooks (*.ipynb) are NOT ignored.

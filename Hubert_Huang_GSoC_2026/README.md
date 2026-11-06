@@ -43,9 +43,8 @@ addresses:
 ## 5. Dataset description
 
 The dataset is two-person (dyadic) EEG recorded during conversation, cut into
-per-role (speak/listen/rest) segments per participant, across up to 33 dyads
-(a subset of dyads/files is excluded per-analysis after QC/flagging — see each
-run's own manifest CSV for the exact count used). Each dyad has an associated
+per-role (speak/listen/rest) segments per participant, across 36 enrolled dyads.
+Each analysis uses a different, defined cohort; see `RESULTS_STATUS.md`. Each dyad has an associated
 Autism Quotient (AQ) score per participant and, for the gender extension,
 an explicit per-participant gender label.
 
@@ -152,16 +151,21 @@ is separate from the model seed.
   component count correspond to dyad identity, independent of any label?)
 - **Cross-entropy / 3D manifold diagnostics** —
   `geometry/analyze_cebra_cross_entropy_3d.py`
-- **Full-retraining permutation controls** (dyad-level and participant-level)
-  — `controls/run_dyad_aq_permutation_control.py`,
+- **Full-retraining permutation controls** --
+  `controls/run_dyad_aq_permutation_control.py`,
+  `controls/run_individual_aq_permutation_control.py`,
+  `controls/run_state_permutation_control.py` (incomplete),
+  `controls/run_individual_gender_permutation_control.py` (not yet run),
+  `controls/summarize_permutation.py`
+- **Frozen-encoder (decoder-only) checks, which do not replace retraining** --
   `controls/run_posthoc_decoder_permutation.py`,
-  `controls/summarize_permutation.py`,
   `controls/followup_individual_aq_checks.py`
 - **Frequency-band removal comparison** —
   `evaluation/build_band_comparison.py`
-- **Aperiodic / non-oscillatory analysis** — `preprocessing/extract_aperiodic_fooof.py`
-  + the `nonosc_*` stages in `training/run_250hz_rerun.py` / figures in
-  `evaluation/build_session_figures.py`
+- **Aperiodic / non-oscillatory analysis** --
+  `preprocessing/run_aperiodic_extractor_adapter.py`,
+  `preprocessing/extract_aperiodic_fooof.py`, `datasets/build_nonosc_speakerfirst.py`;
+  figures in `evaluation/build_session_figures.py`
 - **Participant-level AQ** — `training/run_individual_aq_role_mapping.py`
 - **Gender and speak/listen/rest state analyses** — everything under
   `gender_analysis/` (`audit_gender_metadata.py`,
@@ -171,74 +175,61 @@ is separate from the model seed.
 
 ## 9. Key scientific conclusion
 
-**Dyad-level AQ-difference decoding did not survive a full-encoder-retraining
-permutation control, while participant-level AQ decoding did survive its
-corresponding control.**
+**Neither AQ decoding result is established under full-encoder-retraining
+permutation controls.** The real accuracy falls inside the null at both the
+dyad and the participant level.
 
-Concretely, in the finalized uniform-250 Hz re-run: the dyad-level
-leave-one-dyad-out 5-NN accuracy for |ΔAQ| sat *inside* the null distribution
-from five independent CEBRA retrainings under permuted dyad labels
-(real ≈ 0.759 vs. permutation-null 0.756 ± 0.009, empirical p ≈ 0.50) — i.e.
-statistically indistinguishable from chance-level structure once the encoder
-itself is retrained under the null, even though naive (non-retrained) decoding
-looked strong. By contrast, participant-level AQ decoding cleared its own
-full-retraining permutation null clearly (real ≈ 0.247 vs. null 0.116 ± 0.020,
-empirical p ≈ 0.0099). The practical lesson: **a downstream decoder trained on
-a fixed embedding can look like strong evidence for a dyad-level effect that
-disappears once you check whether the embedding itself, not just the decoder,
-could have produced that accuracy by chance.** This same permutation-control
-pattern (dyad-level result null, participant-level result real) also held
-after removing all oscillatory content (Section 8, aperiodic analysis),
-arguing the conclusion is not an artifact of any one frequency band.
+| analysis | retrainings | real | null mean +/- SD | null >= real | empirical p |
+|---|---|---|---|---|---|
+| Dyad AQ magnitude, leave-one-dyad-out | 20 | 0.7589 | 0.7649 +/- 0.0166 | 11 | 0.571 |
+| Participant exact AQ, leave-one-dyad-out | 200 | 0.2437 | 0.2589 +/- 0.0335 | 138 | 0.692 |
+| Participant exact AQ, leave-one-participant-out | 200 | 0.2300 | 0.2306 +/- 0.0386 | 93 | 0.468 |
 
-See `figures/fullband_speakerfirst_permutation_5nn_null.png` (dyad-level,
-null) and `figures/individual_aq_permutation_null.png` (participant-level,
-survives) for the corresponding plots, and `figures/README.md` for the full
-figure index.
+A decoder run on one frozen embedding gave a much stronger impression
+(participant-level p = 0.0099), but that test never retrains the encoder.
+These results mean label-specific representation learning was not established;
+they do not show that AQ has no neural signature.
+
+The speaking/listening/resting control is incomplete and the individual-gender
+control has not been run. Current numbers, cohort definitions, limitations and
+corrections to the first version of this README are in
+[`RESULTS_STATUS.md`](RESULTS_STATUS.md).
+
+See `figures/dyad_aq_full_retraining_null_20perms.png` and
+`figures/individual_aq_full_retraining_null_200perms.png`.
 
 ## 10. Reproduction commands
 
-Every script takes explicit path arguments and documents them under
-`--help`; the commands below show the intended order for the core pipeline.
-Adjust paths to your own data layout (Section 11).
+Run from this folder. Adjust paths to your own data layout (Section 11). Every
+script documents its options under `--help`. These commands were checked against
+each script's argument parser, not rerun end to end.
 
 ```bash
 pip install -r requirements.txt
 
-# 1. Preprocessing (see Section 6 for the full stage list / rationale)
-python preprocessing/audit_edf_sampling_rates.py --input-dir "/path/to/EDF Files cut" --out-csv audit.csv
-python preprocessing/resample_33dyad_to_250.py --input-dir "/path/to/EDF Files cut" --output-dir "/path/to/Resampled250"
-python preprocessing/qc_filtered_edfs.py --help   # see flags for your filtered-band layout
+# 1. Audit, then resample every source recording to 250 Hz
+python preprocessing/audit_edf_sampling_rates.py --roots "/path/to/EDF Files cut" --out-csv audit.csv --out-md audit.md
+python preprocessing/resample_33dyad_to_250.py --input-root "/path/to/source EDFs" --out-dir "/path/to/Resampled250" --qc-dir "/path/to/qc" --include-rest
 
-# 2. Build the CEBRA input dataset + manifest
-python datasets/batch_speaker_first_stack.py --input-dir "/path/to/Resampled250" --out-dir "/path/to/Filtered CEBRA Inputs/fullband250"
+# 2. Build the speaker-first dataset and manifest
+python datasets/batch_speaker_first_stack.py --input-dir "/path/to/Resampled250" --prefix fullband250 --output-dir "/path/to/Filtered CEBRA Inputs/fullband250" --aq-sheet /path/to/demographics.xlsx
 
-# 3. Train + evaluate on the uniform 250 Hz dataset (baseline, permutation
-#    control, six-class, SVM comparisons, GMM identity check)
-python training/run_250hz_rerun.py --data-root "/path/to" --dry-run   # preview the plan
-python training/run_250hz_rerun.py --data-root "/path/to"             # run it
+# 3. Baseline, dyad permutation control, six-class, SVM and GMM stages
+python training/run_250hz_rerun.py --data-root /path/to --dry-run
+python training/run_250hz_rerun.py --data-root /path/to
 
-# 4. Participant-level AQ
-python training/run_individual_aq_role_mapping.py --help
+# 4. Participant-level AQ, then its full-retraining control
+python training/run_individual_aq_role_mapping.py --input-dir "/path/to/EDF Files cut" --aq-sheet /path/to/demographics.xlsx --out-dir results/individual_aq_role
+python controls/run_individual_aq_permutation_control.py --input-dir "/path/to/EDF Files cut" --aq-sheet /path/to/demographics.xlsx --out-dir results/individual_aq_perm --real-embedding results/individual_aq_role/embedding.npy --perm-seeds 0 1 2
 
-# 5. Aperiodic / non-oscillatory extraction (optional; requires `fooof`)
-python preprocessing/extract_aperiodic_fooof.py --help
-
-# 6. Gender / state extension (requires your own demographics spreadsheet)
-python gender_analysis/audit_gender_metadata.py \
-    --demographics-xlsx /path/to/demographics.xlsx \
-    --speakerfirst-manifest "/path/to/Filtered CEBRA Inputs/fullband250/fullband250_manifest.csv" \
-    --out-dir results/gender_analysis
-
-# 7. Reports, LaTeX snippets, and the final figure bundle
-python evaluation/build_reports_and_export.py --results-root results
-python evaluation/build_session_figures.py --results-root results
-python evaluation/build_overleaf_figures_250.py --results-root results
+# 5. Gender metadata audit, state model, then its full-retraining control
+python gender_analysis/audit_gender_metadata.py --demographics-xlsx /path/to/demographics.xlsx --speakerfirst-manifest "/path/to/Filtered CEBRA Inputs/fullband250/fullband250_manifest.csv" --out-dir results/gender_analysis
+python gender_analysis/run_gender_participant_states.py --input-dir "/path/to/Resampled250" --gender-json results/gender_analysis/gender_metadata_audit.json --out-dir results/participant_states
+python controls/run_state_permutation_control.py --input-dir "/path/to/Resampled250" --gender-json results/gender_analysis/gender_metadata_audit.json --out-dir results/state_perm --real-embedding results/participant_states/embedding.npy --perm-seeds 0 1 2
 ```
 
-Every other script (`controls/`, `geometry/`, `evaluation/aq_delta6_svm_and_panels.py`,
-etc.) is invoked similarly against the outputs of the stage before it — run
-`python <script>.py --help` for its exact required inputs.
+Permutation controls are checkpointed per seed, so rerunning a command skips
+seeds that already have a `metrics.json`.
 
 ## 11. Expected input directory structure
 
@@ -306,8 +297,6 @@ See `requirements.txt` for the full pinned-free dependency list.
 
 BLOG_URL: _TODO — add the final GSoC 2026 blog post URL here._
 
-A curated set of publication-ready figures for that post (not part of this
-code submission) was prepared separately under `results/gsoc_blog_figures/`.
 
 ## 15. Citation / acknowledgments
 

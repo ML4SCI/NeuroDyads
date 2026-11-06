@@ -101,11 +101,10 @@ This experiment grid helps us pinpoint which training setup yields the most stab
 
 - **[Hubert Huang](Hubert_Huang_GSoC_2026/)** — a uniform-250 Hz preprocessing
   and CEBRA analysis pipeline covering AQ-magnitude and six-class |ΔAQ|
-  decoding, full-encoder-retraining permutation controls at both the dyad and
-  participant level, embedding-geometry/GMM diagnostics, a frequency-band and
-  aperiodic (non-oscillatory) analysis, and a gender/conversational-state
-  extension. See the folder's own `README.md` for details and reproduction
-  instructions.
+  decoding, full-encoder-retraining permutation controls, embedding-geometry/GMM
+  diagnostics, a frequency-band and aperiodic (non-oscillatory) analysis, and a
+  gender/conversational-state extension. Neither AQ decoding result was
+  established under full retraining; see the folder's `RESULTS_STATUS.md`.
 
 ---
 
