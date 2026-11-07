@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-evaluation/build_session_figures.py
+Evaluation/build_session_figures.py
 =====================================
 Produce a curated set of ten summary figures from already-computed results
 (the six-class |dAQ| run, the participant-level AQ analysis, and the
@@ -10,7 +10,7 @@ the ones that need composing and copies the ones that already exist verbatim.
 All figures: PNG, 300 dpi, white background, no local paths in titles.
 
 By default this expects the standard results/aug4_pipeline/ layout produced
-by the training/, controls/, and preprocessing/ scripts in this submission;
+by the CEBRATraining/, PermutationControls/, and Preprocessing250Hz/ scripts in this submission;
 point --results-root elsewhere if your results tree lives somewhere else.
 """
 from __future__ import annotations
@@ -322,8 +322,8 @@ def main():
         description="Build ten curated summary PNGs (six-class |dAQ| SVM "
                     "panels, participant-level AQ figures, non-oscillatory "
                     "QC/comparison/permutation figures) from an existing "
-                    "results/aug4_pipeline/ tree produced by the training/, "
-                    "controls/, and preprocessing/ scripts in this "
+                    "results/aug4_pipeline/ tree produced by the CEBRATraining/, "
+                    "PermutationControls/, and Preprocessing250Hz/ scripts in this "
                     "submission, plus the sibling results/filtered_bands_ours/ "
                     "tree.")
     ap.add_argument("--results-root", type=Path, default=RESULTS,

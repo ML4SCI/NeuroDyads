@@ -24,13 +24,13 @@ import argparse, json, os, subprocess, sys, time
 from datetime import datetime
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[1]
 AUG = ROOT / "results" / "aug4_pipeline"
 LOGS = AUG / "logs"
 # --data-root (see argparse below) is expected to contain, at minimum:
 #   <data-root>/Filtered CEBRA Inputs/fullband250/fullband250_manifest.csv
 # i.e. the finalized uniform-250 Hz speaker-first dataset produced by
-# preprocessing/resample_33dyad_to_250.py + datasets/batch_speaker_first_stack.py.
+# Preprocessing250Hz/resample_33dyad_to_250.py + CEBRAInputs/batch_speaker_first_stack.py.
 BASE = AUG / "rerun250" / "fullband_baseline"
 PERM = AUG / "rerun250" / "dyad_permutation"
 D6 = AUG / "rerun250" / "aq_delta6"
@@ -68,7 +68,7 @@ def stages(data_root: Path):
         dict(id="B1", name="Full-band speaker-first baseline @250 Hz",
              done=lambda: (BASE / "metrics.json").exists(),
              blocked=lambda: None if MAN.exists() else "250 Hz manifest missing",
-             cmd=[PY, "-u", "scripts/run_band_cebra_analysis.py",
+             cmd=[PY, "-u", "CEBRATraining/run_band_cebra_analysis.py",
                   "--data-dir", str(SF), "--manifest", str(MAN),
                   "--band", "fullband250",
                   "--out-dir", str(BASE.relative_to(ROOT)),
@@ -79,7 +79,7 @@ def stages(data_root: Path):
              done=lambda: len(list(PERM.glob("perm*/metrics.json"))) >= 5,
              blocked=lambda: None if (BASE / "embedding.npy").exists()
              else "baseline embedding missing",
-             cmd=[PY, "-u", "scripts/run_dyad_aq_permutation_control.py",
+             cmd=[PY, "-u", "PermutationControls/run_dyad_aq_permutation_control.py",
                   "--data-dir", str(SF), "--manifest", str(MAN),
                   "--out-dir", str(PERM.relative_to(ROOT)),
                   "--condition", "fullband250_speakerfirst",
@@ -92,7 +92,7 @@ def stages(data_root: Path):
              done=lambda: (PERM / "permutation_summary.md").exists(),
              blocked=lambda: None if list(PERM.glob("perm*/metrics.json"))
              else "no permutations completed",
-             cmd=[PY, "-u", "scripts/summarize_permutation.py",
+             cmd=[PY, "-u", "PermutationControls/summarize_permutation.py",
                   "--perm-dir", str(PERM.relative_to(ROOT)),
                   "--real-metrics", str((BASE / "metrics.json").relative_to(ROOT)),
                   "--real-rescored",
@@ -103,7 +103,7 @@ def stages(data_root: Path):
         dict(id="D6", name="Six-class |dAQ| @250 Hz",
              done=lambda: (D6 / "metrics.json").exists(),
              blocked=lambda: None if MAN.exists() else "250 Hz manifest missing",
-             cmd=[PY, "-u", "scripts/run_aq_delta6_pipeline.py",
+             cmd=[PY, "-u", "CEBRATraining/run_aq_delta6_pipeline.py",
                   "--data-dir", str(SF), "--manifest", str(MAN),
                   "--out-dir", str(D6.relative_to(ROOT)),
                   "--max-iterations", "5000", "--seed", "0", "--drop-daq", "7",
@@ -114,7 +114,7 @@ def stages(data_root: Path):
              done=lambda: (SVM / "svm_metrics.json").exists(),
              blocked=lambda: None if (D6 / "embedding.npy").exists()
              else "six-class embedding missing",
-             cmd=[PY, "-u", "scripts/aq_delta6_svm_and_panels.py",
+             cmd=[PY, "-u", "Evaluation/aq_delta6_svm_and_panels.py",
                   "--run-dir", str(D6.relative_to(ROOT)),
                   "--out-dir", str(SVM.relative_to(ROOT)),
                   "--n-samples", "24000", "--seed", "0"],
@@ -124,7 +124,7 @@ def stages(data_root: Path):
              done=lambda: (GMM / "identity_answers.json").exists(),
              blocked=lambda: None if (BASE / "embedding.npy").exists()
              else "baseline embedding missing",
-             cmd=[PY, "-u", "scripts/analyze_gmm_component_identity.py",
+             cmd=[PY, "-u", "EmbeddingGeometry/analyze_gmm_component_identity.py",
                   "--embedding", str((BASE / "embedding.npy").relative_to(ROOT)),
                   "--sample-metadata", str((BASE / "sample_metadata.csv").relative_to(ROOT)),
                   "--manifest", str(MAN),

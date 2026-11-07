@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-examples/build_lightning_talk_pptx.py
+LightningTalk/build_lightning_talk_pptx.py
 =======================================
 Builds the 3-minute ML4SCI GSoC 2026 lightning-talk deck (NeuroDyads,
 Hubert Huang) as an editable PPTX with embedded speaker notes.
@@ -10,8 +10,8 @@ on disk (no model is retrained or rerun here). All figures are copies of
 existing project PNGs; nothing is regenerated from raw data.
 
 This is a one-off "build my own final deck" example, not a general CLI tool:
-paths are all relative to this repo (ROOT = the folder above examples/, i.e.
-Hubert_Huang_GSoC_2026/), and it reads/validates its inputs at import time
+paths are all relative to this repo (ROOT = the folder above LightningTalk/, i.e.
+the repository root), and it reads/validates its inputs at import time
 (so it exits immediately with a clear "MISSING REQUIRED FIGURE"/file-not-found
 error unless run against a `results/` tree that already contains the full
 finalized 250 Hz outputs described below). Requires python-pptx

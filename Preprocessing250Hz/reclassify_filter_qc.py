@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 """
-preprocessing/reclassify_filter_qc.py
+Preprocessing250Hz/reclassify_filter_qc.py
 ======================================
 Post-hoc reclassification of the filter QC, without recomputing any PSD.
 
-Reads the per-file QC table already produced by preprocessing/qc_filtered_edfs.py
+Reads the per-file QC table already produced by Preprocessing250Hz/qc_filtered_edfs.py
 and looks for a specific diagnostic signature: recordings where in-band AND
 out-of-band attenuation both sit at exactly -6.02 dB (= a 0.5x amplitude gain,
 0.25x power) in EVERY condition, including the unfiltered `fullband` re-export.

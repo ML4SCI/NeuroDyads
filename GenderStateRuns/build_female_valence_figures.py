@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-gender_analysis/build_female_valence_figures.py
+GenderStateRuns/build_female_valence_figures.py
 =================================================
 Figures for the female-only positive-vs-negative valence CEBRA analysis.
 Label source: InteractionQuality/IntRating_code (Satisfactory=positive,

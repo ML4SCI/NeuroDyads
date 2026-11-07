@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-gender_analysis/audit_gender_metadata.py
+GenderStateRuns/audit_gender_metadata.py
 =========================================
 Audit explicit gender metadata and intersect it with the finalized 250 Hz
 speaker-first dataset.
@@ -9,7 +9,7 @@ Gender is read ONLY from the demographic spreadsheet's 'Full-Info' sheet,
 columns 'Speaker Gender' / 'Listener Gender'. Nothing is inferred from names,
 participant IDs, or file order. The output JSON
 (`gender_metadata_audit.json`) is consumed by every other script in this
-gender_analysis/ folder, so run this one first.
+GenderStateRuns/ folder, so run this one first.
 
 Usage
 -----
@@ -22,7 +22,7 @@ Usage
 
 Note: the demographic spreadsheet contains participant-identifiable
 information and is intentionally NOT included in this submission (see the
-top-level README's "Dataset description" section). Point --demographics-xlsx
+CEBRA_250Hz_Pipeline.md's "Dataset description" section). Point --demographics-xlsx
 at your own copy of that file to reproduce this audit.
 """
 from __future__ import annotations
@@ -55,10 +55,10 @@ def main():
                     help="Path to the dyad/participant demographics "
                          "spreadsheet (must have a 'Full-Info' sheet with "
                          "'Speaker Gender' / 'Listener Gender' columns). Not "
-                         "included in this repository -- see README.")
+                         "included in this repository -- see CEBRA_250Hz_Pipeline.md.")
     ap.add_argument("--speakerfirst-manifest", required=True, type=Path,
                     help="Manifest CSV produced by "
-                         "datasets/batch_speaker_first_stack.py for the "
+                         "CEBRAInputs/batch_speaker_first_stack.py for the "
                          "finalized 250 Hz full-band speaker-first dataset.")
     ap.add_argument("--resampled-dir", type=Path, default=None,
                     help="Optional: folder of uniform-250 Hz role EDFs "
