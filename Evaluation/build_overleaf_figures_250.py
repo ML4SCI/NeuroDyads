@@ -238,8 +238,8 @@ def main():
                     "250 Hz re-run from an existing results/aug4_pipeline/ "
                     "tree (expects rerun250/, aq_delta6_svm/, and "
                     "band_comparison/ subfolders, as produced by "
-                    "training/run_250hz_rerun.py and "
-                    "evaluation/build_band_comparison.py in this submission).")
+                    "CEBRATraining/run_250hz_rerun.py and "
+                    "Evaluation/build_band_comparison.py in this submission).")
     ap.add_argument("--results-root", type=Path, default=RESULTS,
                     help=f"Path to the results/ directory (default: {RESULTS}).")
     args = ap.parse_args()

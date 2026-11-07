@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 """
-controls/run_individual_aq_permutation_control.py
+PermutationControls/run_individual_aq_permutation_control.py
 ===================================================
 PARTICIPANT-LEVEL AQ PERMUTATION CONTROL, with CEBRA retrained per permutation.
 
 Written for the October 9 2026 mentor audit. Before this script existed, the
 ONLY participant-level AQ permutation test in the project was the inline
-decoder-level check inside training/run_individual_aq_role_mapping.py
-(see its --n-perms flag) and controls/followup_individual_aq_checks.py's
+decoder-level check inside CEBRATraining/run_individual_aq_role_mapping.py
+(see its --n-perms flag) and PermutationControls/followup_individual_aq_checks.py's
 "dyad_permutation" block -- BOTH of those load the single already-trained
 embedding ONCE and only re-run k-NN decoding under permuted labels. CEBRA
 itself is never retrained in either of them. That is exactly the weaker
@@ -17,11 +17,11 @@ encoder cannot reveal label information the encoder itself absorbed during
 training.
 
 This script closes that gap for the participant-level result by mirroring
-controls/run_dyad_aq_permutation_control.py's design, one level down:
+PermutationControls/run_dyad_aq_permutation_control.py's design, one level down:
 
   1. Load the validated individual-AQ dataset (EDF Files cut, both-role
      participants only, flagged participants excluded), identically to
-     training/run_individual_aq_role_mapping.py.
+     CEBRATraining/run_individual_aq_role_mapping.py.
   2. For permutation seed s: permute the PARTICIPANT -> AQ-score assignment.
      * both of a participant's recordings (speak + listen) get the SAME
        permuted AQ score
@@ -59,7 +59,7 @@ from sklearn.preprocessing import StandardScaler
 
 mne.set_log_level("ERROR"); warnings.filterwarnings("ignore")
 
-# ---- CEBRA config: MUST match training/run_individual_aq_role_mapping.py ----
+# ---- CEBRA config: MUST match CEBRATraining/run_individual_aq_role_mapping.py ----
 CEBRA_KW = dict(model_architecture="offset10-model", batch_size=512, learning_rate=3e-4,
                 temperature=1.12, conditional="time_delta", output_dimension=3,
                 distance="cosine", device="cuda_if_available", verbose=True, time_offsets=10)
@@ -130,7 +130,7 @@ def main():
         description="Participant-level AQ permutation control with full CEBRA "
                     "retraining per permutation (see module docstring).")
     ap.add_argument("--input-dir", required=True, help="Folder of cut per-role EDFs "
-                    "(same as training/run_individual_aq_role_mapping.py --input-dir).")
+                    "(same as CEBRATraining/run_individual_aq_role_mapping.py --input-dir).")
     ap.add_argument("--aq-sheet", required=True)
     ap.add_argument("--out-dir", required=True)
     ap.add_argument("--max-iterations", type=int, default=5000)

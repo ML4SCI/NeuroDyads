@@ -11,15 +11,30 @@ State from Two-Person EEG ("NeuroDyads")**
 
 ## 3. GSoC / ML4Sci NeuroDyads
 
-This folder is one contributor's submission to the
-[ML4Sci NeuroDyads](https://github.com/ML4SCI/NeuroDyads) project, developed
-during GSoC 2026. It builds on the project's existing EEG preprocessing and
+This document describes a pipeline developed during GSoC 2026 for the
+[ML4Sci NeuroDyads](https://github.com/ML4SCI/NeuroDyads) project. It builds on the project's existing EEG preprocessing and
 CEBRA-training scaffolding (see the top-level `README.md`,
 `PreprocessingPipeline/`, and `train_cebra*.py`) and adds a complete,
 independently reproducible analysis pipeline: uniform-sampling-rate
 preprocessing, CEBRA embedding training, decoding evaluations, full-retraining
 permutation controls, embedding-geometry diagnostics, and a gender/state
 extension.
+
+| folder | contents |
+|---|---|
+| `Preprocessing250Hz/` | EDF audit, resampling to 250 Hz, filtering, QC, aperiodic extraction |
+| `CEBRAInputs/` | Stacked speaker-first arrays and label manifests |
+| `CEBRATraining/` | CEBRA training and the 250 Hz rerun driver |
+| `PermutationControls/` | Full-retraining and frozen-encoder permutation controls |
+| `EmbeddingGeometry/` | Longitude/latitude, GMM and cross-entropy diagnostics |
+| `Evaluation/` | SVM comparison, band comparison, reports and figure builders |
+| `GenderStateRuns/` | Gender, speak/listen/rest and valence analyses |
+| `ResultFigures/` | Result figures, indexed in its `README.md` |
+| `ResultsSummary/` | Per-seed permutation results, aggregate only |
+| `LightningTalk/` | Script that builds the GSoC lightning-talk deck |
+
+These folders were originally one folder, `Hubert_Huang_GSoC_2026/`, which older
+links and commits still refer to.
 
 ## 4. Problem statement
 
@@ -64,43 +79,43 @@ enough to reproduce the pipeline against your own copy of the data.
 ## 6. Final preprocessing pipeline
 
 Executed roughly in this order (each stage is a standalone, resumable script
-under `preprocessing/` and `datasets/`):
+under `Preprocessing250Hz/` and `CEBRAInputs/`):
 
-1. **`preprocessing/audit_edf_sampling_rates.py`** — read-only integrity/rate
+1. **`Preprocessing250Hz/audit_edf_sampling_rates.py`** — read-only integrity/rate
    audit of every source EDF (sampling rate, channel count, duration,
    SHA-256), never modifies originals.
-2. **`preprocessing/organize_edf_by_dyad.py`** *(optional)* — reorganize a
+2. **`Preprocessing250Hz/organize_edf_by_dyad.py`** *(optional)* — reorganize a
    flat folder of cut EDFs into `dyad/participant/role` subfolders; several
    downstream scripts can also scan a flat folder directly.
-3. **`preprocessing/downsample_and_filter_edf.py`** — downsample to 250 Hz
+3. **`Preprocessing250Hz/downsample_and_filter_edf.py`** — downsample to 250 Hz
    where needed and produce band-removed variants with a local, verified FIR
    filter (firwin, Hamming window, zero-phase, 1 Hz transition edges).
-4. **`preprocessing/resample_33dyad_to_250.py`** — resample the remaining
+4. **`Preprocessing250Hz/resample_33dyad_to_250.py`** — resample the remaining
    1000 Hz recordings to a uniform 250 Hz. This step exists because the
    original 33-dyad set mixed 1000 Hz and 250 Hz sources: a fixed
    sample-count crop under mixed rates gave wildly different real-time
    windows per dyad (90.2 s vs. 361 s) and a fixed `time_offsets=10` spanned
    10 ms vs. 40 ms. Uniform 250 Hz makes a sample-count crop a duration crop.
-5. **`preprocessing/qc_filtered_edfs.py`** / **`reclassify_filter_qc.py`** —
+5. **`Preprocessing250Hz/qc_filtered_edfs.py`** / **`reclassify_filter_qc.py`** —
    PSD-based proof that each "filtered" output is actually attenuated in its
    intended band (catches silently-unfiltered files).
-6. **`preprocessing/compare_new_nonosc_upload.py`** /
+6. **`Preprocessing250Hz/compare_new_nonosc_upload.py`** /
    **`verify_uploaded_band_files.py`** — provenance/QC checks confirming
    whether externally supplied "filtered" or "non-oscillatory" EDF sets are
    genuinely different from the raw signal (both were found NOT to be, which
    motivated step 7).
-7. **`preprocessing/extract_aperiodic_fooof.py`** +
-   **`preprocessing/run_aperiodic_extractor_adapter.py`** — a self-built,
+7. **`Preprocessing250Hz/extract_aperiodic_fooof.py`** +
+   **`Preprocessing250Hz/run_aperiodic_extractor_adapter.py`** — a self-built,
    FOOOF/specparam-based aperiodic (non-oscillatory) extraction, used because
    the externally supplied "non-oscillatory" data turned out to be
    unmodified raw signal. The adapter script wraps an extraction module
    written by another NeuroDyads collaborator (see its docstring); that
    module itself is not bundled here.
-8. **`datasets/batch_speaker_first_stack.py`** /
+8. **`CEBRAInputs/batch_speaker_first_stack.py`** /
    **`batch_stack_edfs_for_cebra.py`** — stack per-role recordings into the
    fixed-sample-count, speaker-first arrays CEBRA trains on, with a manifest
    CSV recording dyad/participant/role/AQ-magnitude per array.
-9. **`datasets/relabel_manifest_magnitude.py`** /
+9. **`CEBRAInputs/relabel_manifest_magnitude.py`** /
    **`build_nonosc_speakerfirst.py`** — derive AQ-magnitude labels
    (Low/High, or six-class |ΔAQ|) onto a manifest, or build the
    non-oscillatory-only counterpart dataset.
@@ -111,8 +126,8 @@ script with `--help` for its exact interface.
 
 ## 7. CEBRA configuration
 
-Every CEBRA model in this submission (`training/`, `controls/`,
-`gender_analysis/*_cebra.py`) uses the same fixed configuration, so results
+Every CEBRA model in this submission (`CEBRATraining/`, `PermutationControls/`,
+`GenderStateRuns/*_cebra.py`) uses the same fixed configuration, so results
 are comparable across analyses:
 
 ```python
@@ -125,7 +140,7 @@ CEBRA(
     output_dimension=3,
     distance="cosine",
     time_offsets=10,
-    max_iterations=5000,   # per training/run_250hz_rerun.py's default stages
+    max_iterations=5000,   # per CEBRATraining/run_250hz_rerun.py's default stages
     device="cuda_if_available",
 )
 ```
@@ -136,39 +151,39 @@ is separate from the model seed.
 
 ## 8. Major analysis modules
 
-- **AQ magnitude (Low/High) decoding** — `training/run_band_cebra_analysis.py`
-- **Six-class |ΔAQ| decoding** — `training/run_aq_delta6_pipeline.py`
+- **AQ magnitude (Low/High) decoding** — `CEBRATraining/run_band_cebra_analysis.py`
+- **Six-class |ΔAQ| decoding** — `CEBRATraining/run_aq_delta6_pipeline.py`
 - **Leave-one-dyad-out evaluation** — built into the training scripts' metric
   computation (grouped 5-NN and GMM metrics never train/test on the same
   dyad)
 - **SVM comparisons** (one-vs-one linear/RBF vs. 5-NN reference, pairwise
-  class separability) — `evaluation/aq_delta6_svm_and_panels.py`
+  class separability) — `Evaluation/aq_delta6_svm_and_panels.py`
 - **Longitude/latitude embedding geometry** —
-  `geometry/analyze_cebra_longitude_latitude.py`,
-  `geometry/analyze_cebra_gmm_lonlat.py`
+  `EmbeddingGeometry/analyze_cebra_longitude_latitude.py`,
+  `EmbeddingGeometry/analyze_cebra_gmm_lonlat.py`
 - **GMM K-sweep / dyad-identity check** —
-  `geometry/analyze_gmm_component_identity.py` (does a data-driven GMM
+  `EmbeddingGeometry/analyze_gmm_component_identity.py` (does a data-driven GMM
   component count correspond to dyad identity, independent of any label?)
 - **Cross-entropy / 3D manifold diagnostics** —
-  `geometry/analyze_cebra_cross_entropy_3d.py`
+  `EmbeddingGeometry/analyze_cebra_cross_entropy_3d.py`
 - **Full-retraining permutation controls** --
-  `controls/run_dyad_aq_permutation_control.py`,
-  `controls/run_individual_aq_permutation_control.py`,
-  `controls/run_state_permutation_control.py` (incomplete),
-  `controls/run_individual_gender_permutation_control.py` (not yet run),
-  `controls/summarize_permutation.py`
+  `PermutationControls/run_dyad_aq_permutation_control.py`,
+  `PermutationControls/run_individual_aq_permutation_control.py`,
+  `PermutationControls/run_state_permutation_control.py` (incomplete),
+  `PermutationControls/run_individual_gender_permutation_control.py` (not yet run),
+  `PermutationControls/summarize_permutation.py`
 - **Frozen-encoder (decoder-only) checks, which do not replace retraining** --
-  `controls/run_posthoc_decoder_permutation.py`,
-  `controls/followup_individual_aq_checks.py`
+  `PermutationControls/run_posthoc_decoder_permutation.py`,
+  `PermutationControls/followup_individual_aq_checks.py`
 - **Frequency-band removal comparison** —
-  `evaluation/build_band_comparison.py`
+  `Evaluation/build_band_comparison.py`
 - **Aperiodic / non-oscillatory analysis** --
-  `preprocessing/run_aperiodic_extractor_adapter.py`,
-  `preprocessing/extract_aperiodic_fooof.py`, `datasets/build_nonosc_speakerfirst.py`;
-  figures in `evaluation/build_session_figures.py`
-- **Participant-level AQ** — `training/run_individual_aq_role_mapping.py`
+  `Preprocessing250Hz/run_aperiodic_extractor_adapter.py`,
+  `Preprocessing250Hz/extract_aperiodic_fooof.py`, `CEBRAInputs/build_nonosc_speakerfirst.py`;
+  figures in `Evaluation/build_session_figures.py`
+- **Participant-level AQ** — `CEBRATraining/run_individual_aq_role_mapping.py`
 - **Gender and speak/listen/rest state analyses** — everything under
-  `gender_analysis/` (`audit_gender_metadata.py`,
+  `GenderStateRuns/` (`audit_gender_metadata.py`,
   `run_gender_dyad_cebra.py`, `run_gender_participant_states.py`,
   `run_sex_specific_states.py`, `run_female_valence_cebra.py`, and their
   figure builders)
@@ -195,37 +210,37 @@ control has not been run. Current numbers, cohort definitions, limitations and
 corrections to the first version of this README are in
 [`RESULTS_STATUS.md`](RESULTS_STATUS.md).
 
-See `figures/dyad_aq_full_retraining_null_20perms.png` and
-`figures/individual_aq_full_retraining_null_200perms.png`.
+See `ResultFigures/dyad_aq_full_retraining_null_20perms.png` and
+`ResultFigures/individual_aq_full_retraining_null_200perms.png`.
 
 ## 10. Reproduction commands
 
-Run from this folder. Adjust paths to your own data layout (Section 11). Every
+Run from the repository root. Adjust paths to your own data layout (Section 11). Every
 script documents its options under `--help`. These commands were checked against
 each script's argument parser, not rerun end to end.
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements-250hz.txt
 
 # 1. Audit, then resample every source recording to 250 Hz
-python preprocessing/audit_edf_sampling_rates.py --roots "/path/to/EDF Files cut" --out-csv audit.csv --out-md audit.md
-python preprocessing/resample_33dyad_to_250.py --input-root "/path/to/source EDFs" --out-dir "/path/to/Resampled250" --qc-dir "/path/to/qc" --include-rest
+python Preprocessing250Hz/audit_edf_sampling_rates.py --roots "/path/to/EDF Files cut" --out-csv audit.csv --out-md audit.md
+python Preprocessing250Hz/resample_33dyad_to_250.py --input-root "/path/to/source EDFs" --out-dir "/path/to/Resampled250" --qc-dir "/path/to/qc" --include-rest
 
 # 2. Build the speaker-first dataset and manifest
-python datasets/batch_speaker_first_stack.py --input-dir "/path/to/Resampled250" --prefix fullband250 --output-dir "/path/to/Filtered CEBRA Inputs/fullband250" --aq-sheet /path/to/demographics.xlsx
+python CEBRAInputs/batch_speaker_first_stack.py --input-dir "/path/to/Resampled250" --prefix fullband250 --output-dir "/path/to/Filtered CEBRA Inputs/fullband250" --aq-sheet /path/to/demographics.xlsx
 
 # 3. Baseline, dyad permutation control, six-class, SVM and GMM stages
-python training/run_250hz_rerun.py --data-root /path/to --dry-run
-python training/run_250hz_rerun.py --data-root /path/to
+python CEBRATraining/run_250hz_rerun.py --data-root /path/to --dry-run
+python CEBRATraining/run_250hz_rerun.py --data-root /path/to
 
 # 4. Participant-level AQ, then its full-retraining control
-python training/run_individual_aq_role_mapping.py --input-dir "/path/to/EDF Files cut" --aq-sheet /path/to/demographics.xlsx --out-dir results/individual_aq_role
-python controls/run_individual_aq_permutation_control.py --input-dir "/path/to/EDF Files cut" --aq-sheet /path/to/demographics.xlsx --out-dir results/individual_aq_perm --real-embedding results/individual_aq_role/embedding.npy --perm-seeds 0 1 2
+python CEBRATraining/run_individual_aq_role_mapping.py --input-dir "/path/to/EDF Files cut" --aq-sheet /path/to/demographics.xlsx --out-dir results/individual_aq_role
+python PermutationControls/run_individual_aq_permutation_control.py --input-dir "/path/to/EDF Files cut" --aq-sheet /path/to/demographics.xlsx --out-dir results/individual_aq_perm --real-embedding results/individual_aq_role/embedding.npy --perm-seeds 0 1 2
 
 # 5. Gender metadata audit, state model, then its full-retraining control
-python gender_analysis/audit_gender_metadata.py --demographics-xlsx /path/to/demographics.xlsx --speakerfirst-manifest "/path/to/Filtered CEBRA Inputs/fullband250/fullband250_manifest.csv" --out-dir results/gender_analysis
-python gender_analysis/run_gender_participant_states.py --input-dir "/path/to/Resampled250" --gender-json results/gender_analysis/gender_metadata_audit.json --out-dir results/participant_states
-python controls/run_state_permutation_control.py --input-dir "/path/to/Resampled250" --gender-json results/gender_analysis/gender_metadata_audit.json --out-dir results/state_perm --real-embedding results/participant_states/embedding.npy --perm-seeds 0 1 2
+python GenderStateRuns/audit_gender_metadata.py --demographics-xlsx /path/to/demographics.xlsx --speakerfirst-manifest "/path/to/Filtered CEBRA Inputs/fullband250/fullband250_manifest.csv" --out-dir results/gender_analysis
+python GenderStateRuns/run_gender_participant_states.py --input-dir "/path/to/Resampled250" --gender-json results/gender_analysis/gender_metadata_audit.json --out-dir results/participant_states
+python PermutationControls/run_state_permutation_control.py --input-dir "/path/to/Resampled250" --gender-json results/gender_analysis/gender_metadata_audit.json --out-dir results/state_perm --real-embedding results/participant_states/embedding.npy --perm-seeds 0 1 2
 ```
 
 Permutation controls are checkpointed per seed, so rerunning a command skips
@@ -265,16 +280,16 @@ in this repository):
 
 - `results/aug4_pipeline/rerun250/{fullband_baseline,dyad_permutation,aq_delta6,aq_delta6_svm,gmm_identity_check}/` —
   metrics JSON, embeddings (`.npy`), trained model weights, and PNGs for each
-  stage of `training/run_250hz_rerun.py`.
+  stage of `CEBRATraining/run_250hz_rerun.py`.
 - `results/aug4_pipeline/individual_aq_role/` — participant-level AQ metrics,
   embedding, and permutation-null figure.
 - `results/aug4_pipeline/overleaf_figures_250hz/` — the 12-figure bundle
-  assembled by `evaluation/build_overleaf_figures_250.py`.
+  assembled by `Evaluation/build_overleaf_figures_250.py`.
 - `results/aug4_pipeline/figures_session_aug11/` — the 10-figure curated set
-  from `evaluation/build_session_figures.py`.
+  from `Evaluation/build_session_figures.py`.
 - `results/aug4_pipeline/AUG4_METRICS_MASTER.csv`, `AUG4_MEETING_SUMMARY.md`,
   and `overleaf_export/` (LaTeX snippets + zipped figures) from
-  `evaluation/build_reports_and_export.py`.
+  `Evaluation/build_reports_and_export.py`.
 - `results/gender_analysis/` — gender-metadata audit JSON, per-sex/state
   CEBRA runs, and their figures.
 
@@ -282,7 +297,7 @@ in this repository):
 
 Developed and run with:
 - Python 3.12
-- `cebra` (see `requirements.txt`; pin your installed version with
+- `cebra` (see `requirements-250hz.txt`; pin your installed version with
   `python -c "import cebra; print(cebra.__version__)"` — recorded
   automatically into each run's `metrics.json` as `cebra_version`)
 - `torch` (CUDA build recommended; CEBRA falls back to CPU automatically via
@@ -291,7 +306,7 @@ Developed and run with:
 - Optional: `fooof` (aperiodic extraction), `python-pptx` + `Pillow`
   (lightning-talk deck), `openpyxl` (reading `.xlsx` demographics)
 
-See `requirements.txt` for the full pinned-free dependency list.
+See `requirements-250hz.txt` for the full pinned-free dependency list.
 
 ## 14. Blog post
 
@@ -307,12 +322,12 @@ BLOG_URL: _TODO — add the final GSoC 2026 blog post URL here._
 - Embeddings trained with [CEBRA](https://cebra.ai)
   (Schneider, Lee & Mathis, *Nature* 2023).
 - The aperiodic/non-oscillatory extraction adapter in
-  `preprocessing/run_aperiodic_extractor_adapter.py` wraps an extraction
+  `Preprocessing250Hz/run_aperiodic_extractor_adapter.py` wraps an extraction
   module written by another NeuroDyads collaborator (Michelle); that module
   is not bundled in this submission — see the adapter's docstring for the
   interface it expects.
 - Filter specification for locally-produced band-removed EDFs
-  (`preprocessing/downsample_and_filter_edf.py`) follows a specification
+  (`Preprocessing250Hz/downsample_and_filter_edf.py`) follows a specification
   provided by that same collaborator.
 
 If you use this code, please cite the ML4Sci NeuroDyads project and CEBRA

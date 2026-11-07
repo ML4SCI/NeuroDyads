@@ -97,14 +97,17 @@ This experiment grid helps us pinpoint which training setup yields the most stab
 
 ---
 
-## GSoC 2026 Contributors
+## 250 Hz CEBRA Analysis (GSoC 2026)
 
-- **[Hubert Huang](Hubert_Huang_GSoC_2026/)** — a uniform-250 Hz preprocessing
-  and CEBRA analysis pipeline covering AQ-magnitude and six-class |ΔAQ|
-  decoding, full-encoder-retraining permutation controls, embedding-geometry/GMM
-  diagnostics, a frequency-band and aperiodic (non-oscillatory) analysis, and a
-  gender/conversational-state extension. Neither AQ decoding result was
-  established under full retraining; see the folder's `RESULTS_STATUS.md`.
+A uniform-250 Hz preprocessing and CEBRA analysis pipeline covering AQ-magnitude
+and six-class |ΔAQ| decoding, full-encoder-retraining permutation controls,
+embedding-geometry/GMM diagnostics, a frequency-band and aperiodic
+(non-oscillatory) analysis, and a gender/conversational-state extension.
+Contributed by Hubert Huang.
+
+Neither AQ decoding result was established under full retraining; see
+[RESULTS_STATUS.md](RESULTS_STATUS.md). The full guide, including the folder
+list and reproduction commands, is [CEBRA_250Hz_Pipeline.md](CEBRA_250Hz_Pipeline.md).
 
 ---
 

@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 """
-preprocessing/organize_edf_by_dyad.py
+Preprocessing250Hz/organize_edf_by_dyad.py
 ======================================
 Stage a FLAT folder of converted EDF files into per-dyad subfolders WITHOUT
 moving or modifying the originals (copy by default; --hardlink to save space).
 
 This is optional -- several downstream scripts in this pipeline (e.g.
-datasets/batch_speaker_first_stack.py) can scan a flat folder directly. This
+CEBRAInputs/batch_speaker_first_stack.py) can scan a flat folder directly. This
 tool is useful for tidy shared-drive uploads and for any tool that expects
 dyad subfolders.
 

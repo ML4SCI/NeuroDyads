@@ -2,9 +2,9 @@
 
 Representative, already-generated result figures from the finalized
 uniform-250 Hz pipeline, included here so the analysis can be understood
-without re-running anything. All were produced by scripts in `evaluation/`,
-`training/`, and `gender_analysis/` against the full results tree (not
-included in this repository — see `README.md`, section 10).
+without re-running anything. All were produced by scripts in `Evaluation/`,
+`CEBRATraining/`, and `GenderStateRuns/` against the full results tree (not
+included in this repository — see `CEBRA_250Hz_Pipeline.md`, section 12).
 
 | file | analysis | what it shows |
 |---|---|---|

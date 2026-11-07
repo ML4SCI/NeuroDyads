@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-controls/run_individual_gender_permutation_control.py
+PermutationControls/run_individual_gender_permutation_control.py
 =======================================================
 INDIVIDUAL-PARTICIPANT gender (female/male) permutation control, with CEBRA
 retrained per permutation. NOT dyad gender composition (FF/MF/MM).
@@ -28,7 +28,7 @@ STATUS: not yet run end to end; validate on a short run before relying on it.
 
 Design:
   1. Load the identical pooled dataset as
-     gender_analysis/run_gender_participant_states.py (68 participants, all
+     GenderStateRuns/run_gender_participant_states.py (68 participants, all
      3 states, flagged participants excluded, global min crop, per-channel
      z-score) -- same data, same grouped evaluation folds as the state
      analysis, per the mentor's "keep all EEG data and grouped evaluation

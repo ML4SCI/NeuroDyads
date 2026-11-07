@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-evaluation/build_reports_and_export.py
+Evaluation/build_reports_and_export.py
 =======================================
 Aggregate report/figure export: pulls together whichever result files already
 exist under a results tree, into a master metrics CSV, LaTeX-ready snippets,
@@ -8,7 +8,7 @@ and a figure bundle. Reads only what is actually on disk, so a partially
 completed pipeline produces an honest partial report rather than an error.
 
 By default this expects the standard results/aug4_pipeline/ layout produced
-by the training/ and controls/ scripts in this submission; point
+by the CEBRATraining/ and PermutationControls/ scripts in this submission; point
 --results-root elsewhere if your results tree lives somewhere else.
 
   python build_reports_and_export.py --results-root /path/to/results/aug4_pipeline
@@ -400,8 +400,8 @@ def main():
         description="Build the master metrics CSV, LaTeX snippets, and figure "
                     "bundle from an existing results/ tree (expects both a "
                     "results/aug4_pipeline/ subfolder and the sibling "
-                    "results/filtered_bands*/ trees produced by the training/ "
-                    "and evaluation/ scripts in this submission).")
+                    "results/filtered_bands*/ trees produced by the CEBRATraining/ "
+                    "and Evaluation/ scripts in this submission).")
     ap.add_argument("--results-root", type=Path, default=RESULTS,
                     help=f"Path to the results/ directory (default: {RESULTS}).")
     args = ap.parse_args()

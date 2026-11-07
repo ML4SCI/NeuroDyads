@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-preprocessing/run_aperiodic_extractor_adapter.py
+Preprocessing250Hz/run_aperiodic_extractor_adapter.py
 ==================================================
 Run a collaborator-authored aperiodic (non-oscillatory) extractor on THIS
 project's EDFs.

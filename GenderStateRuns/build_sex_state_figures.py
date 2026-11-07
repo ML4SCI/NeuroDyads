@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-gender_analysis/build_sex_state_figures.py
+GenderStateRuns/build_sex_state_figures.py
 ===========================================
 Publication-ready figures for the female-only and male-only speak/listen/rest
 CEBRA analyses (run_sex_specific_states.py), plus a female-vs-male comparison
@@ -8,7 +8,7 @@ panel. Lon/lat convention matches run_gender_dyad_cebra.py exactly: median-
 center the embedding, arctan2 to spherical coordinates, then re-center
 longitude on the circular mean so the wrap seam sits away from the data.
 
-Unlike the other evaluation/ figure builders, this script uses fixed paths
+Unlike the other Evaluation/ figure builders, this script uses fixed paths
 relative to the current working directory rather than --results-root, since
 it only ever reads run_sex_specific_states.py's fixed output layout. Run it
 from the directory that contains `results/`, after that script has produced:

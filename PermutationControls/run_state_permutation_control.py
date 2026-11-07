@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 """
-controls/run_state_permutation_control.py
+PermutationControls/run_state_permutation_control.py
 ==========================================
 WITHIN-PARTICIPANT, BLOCKED speaking/listening/resting permutation control,
 with CEBRA retrained per permutation.
 
 Written for the October 15 2026 mentor audit. Before this script existed,
-the pooled state model (gender_analysis/run_gender_participant_states.py)
+the pooled state model (GenderStateRuns/run_gender_participant_states.py)
 had no permutation control of its own at all for the STATE target -- the
 only permutation control in that script is for GENDER, and it is a
 frozen-embedding, decoder-only test (one `model.fit()` call, trained on
@@ -14,11 +14,11 @@ state labels; the gender-permutation loop only re-evaluates that same
 embedding under shuffled labels -- confirmed by reading the code directly).
 
 Design (mirrors the already-validated dyad/individual AQ permutation
-controls one level down, see controls/run_dyad_aq_permutation_control.py
-and controls/run_individual_aq_permutation_control.py):
+controls one level down, see PermutationControls/run_dyad_aq_permutation_control.py
+and PermutationControls/run_individual_aq_permutation_control.py):
 
   1. Load the validated pooled dataset exactly as
-     gender_analysis/run_gender_participant_states.py does: 68 participants
+     GenderStateRuns/run_gender_participant_states.py does: 68 participants
      with all 3 states (speak/listen/rest), flagged participants excluded,
      global minimum crop applied, per-channel z-scored.
   2. Verified precondition (checked explicitly, not assumed): every

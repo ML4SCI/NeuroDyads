@@ -23,6 +23,9 @@ Filtered Data/
 *.pth
 *.ckpt
 
+# --- Generated logs ---
+*.log
+
 # --- Python ---
 __pycache__/
 *.py[cod]

@@ -1,7 +1,7 @@
 # Results status and corrections
 
 Last updated: 6 November 2026. This file supersedes any conflicting statement in
-earlier reports or in the first version of this folder (PR #4).
+earlier reports or in the first version of this work (PR #4).
 
 ## Permutation controls
 
@@ -37,7 +37,7 @@ tested. Surviving this control would not exclude EMG, movement or session confou
 **Gender.** The earlier p = 0.4129 is not a retraining result. It shuffled gender
 labels on one embedding that was trained on state, never on gender.
 
-Per-seed values are in `results_summary/`, with no participant-level labels.
+Per-seed values are in `ResultsSummary/`, with no participant-level labels.
 
 ## Limitations
 
@@ -98,7 +98,7 @@ Different analyses legitimately use different cohorts.
    frozen-encoder test. It fails under full retraining.
 2. **The non-oscillatory pattern "also held": unsupported.** No participant-level
    non-oscillatory control exists.
-3. **`training/run_250hz_rerun.py` could not run as published.** It called a `scripts/`
+3. **`CEBRATraining/run_250hz_rerun.py` could not run as published.** It called a `scripts/`
    folder absent from this submission. Only its dry run had been tested. Paths are fixed;
    a full run has not been repeated.
 4. **README reproduction commands used wrong flags.** They now match each parser.
@@ -110,7 +110,7 @@ Different analyses legitimately use different cohorts.
    review was found.
 8. **The six-class sample count was wrong.** It is 9,504,000.
 9. **A figure named `200_perm_dyad_aq.png` holds 20 permutations.** The published copy
-   is `figures/dyad_aq_full_retraining_null_20perms.png`.
+   is `ResultFigures/dyad_aq_full_retraining_null_20perms.png`.
 10. **State counts were overstated by one.** Seed 0 was a 50-iteration benchmark and was
     excluded, leaving 10 valid runs. Seed 0 must be rerun at 5000 iterations.
 11. **Concurrent GPU workers were not "tested and found unsafe".** Only one process's
